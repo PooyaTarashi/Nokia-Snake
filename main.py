@@ -7,13 +7,19 @@ from pygame.draw import rect as drwrct
 class SNAKE:
     def __init__(self):
         self.body = [v2(5, 10), v2(6, 10), v2(7, 10)]
-    
+        self.direction = v2(1, 0)    
+
     def draw_snake(self):
         for cell in self.body:
             snake_x_pos = int(cell.x * grid_size)
             snake_y_pos = int(cell.y * grid_size)
             cell_rect = pg.Rect(snake_x_pos, snake_y_pos, grid_size, grid_size)
             drwrct(screen, (0, 0, 255), cell_rect)
+
+    def move_snake(self):
+        body_copy = self.body[:-1]
+        body_copy.insert(0, body_copy[0] + self.direction)
+        self.body = body_copy[:]
 
 
 class FOOD:
@@ -38,12 +44,17 @@ clock = pg.time.Clock()
 apple = FOOD()
 snaky = SNAKE()
 
+SCREEN_UPDATE = pg.USEREVENT
+pg.time.set_timer(SCREEN_UPDATE, 10)
+
 while True:
     # checks for happening event
     # if quit, sys exit stops every running code
     for event in pg.event.get():
         if event.type == pg.QUIT:
             sys.exit()
+        if event.type == SCREEN_UPDATE:
+            snaky.move_snake()
 
     # add fill color to screen surface
     screen.fill((175, 215, 70))
