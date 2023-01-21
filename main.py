@@ -16,9 +16,16 @@ class SNAKE:
             cell_rect = pg.Rect(snake_x_pos, snake_y_pos, grid_size, grid_size)
             drwrct(screen, (0, 0, 255), cell_rect)
 
-    def move_snake(self):
+    def move_snake(self, c):
+        missing_block = self.body[1]
         body_copy = self.body[:-1]
-        body_copy.insert(0, body_copy[0] + self.direction)
+        if c == 0:
+            body_copy.insert(0, body_copy[0] + self.direction + v2(1, 0))
+        
+        else:
+            body_copy.insert(0, body_copy[len(body_copy) - 1] + self.direction)
+
+        
         self.body = body_copy[:]
 
 
@@ -45,7 +52,10 @@ apple = FOOD()
 snaky = SNAKE()
 
 SCREEN_UPDATE = pg.USEREVENT
-pg.time.set_timer(SCREEN_UPDATE, 10)
+pg.time.set_timer(SCREEN_UPDATE, 150)
+# عدد رو به تابعی از طول مار تبدیل خواهم کرد
+
+c = 0
 
 while True:
     # checks for happening event
@@ -54,7 +64,8 @@ while True:
         if event.type == pg.QUIT:
             sys.exit()
         if event.type == SCREEN_UPDATE:
-            snaky.move_snake()
+            snaky.move_snake(c)
+            c += 1
 
     # add fill color to screen surface
     screen.fill((175, 215, 70))
