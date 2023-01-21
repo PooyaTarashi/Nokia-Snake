@@ -24,14 +24,17 @@ class SNAKE:
 
 class FOOD:
     def __init__(self):
-        self.x = rnt(0, x_grids_count - 1)
-        self.y = rnt(0, y_grids_count - 1)
-        self.pos = v2(self.x, self.y)
+        self.reinitialize_random_position()
     
     def draw_food(self):
         food_rect = pg.Rect(int(self.pos.x * grid_size), int(self.pos.y * grid_size), grid_size, grid_size)
         drwrct(screen, (126, 166, 114), food_rect)
 
+    def reinitialize_random_position(self):
+        self.x = rnt(0, x_grids_count - 1)
+        self.y = rnt(0, y_grids_count - 1)
+        self.pos = v2(self.x, self.y)
+        
 # module initiatioin
 pg.init()
 # griding screen
@@ -45,7 +48,7 @@ apple = FOOD()
 snaky = SNAKE()
 
 SCREEN_UPDATE = pg.USEREVENT
-pg.time.set_timer(SCREEN_UPDATE, 150)
+pg.time.set_timer(SCREEN_UPDATE, 90)
 # عدد رو به تابعی از طول مار تبدیل خواهم کرد
 
 while True:
@@ -68,10 +71,22 @@ while True:
         if event.type == pg.KEYDOWN and snaky.direction != (1, 0):
             if event.key == pg.K_LEFT or event.key == pg.K_a:
                 snaky.direction = v2(-1, 0)
-
+    
     # add fill color to screen surface
     screen.fill((175, 215, 70))
     apple.draw_food()
     snaky.draw_snake()
     pg.display.update()
+    if apple.pos == snaky.body[0]:
+        apple.reinitialize_random_position()
+        if v2(snaky.body[0].x + 1, snaky.body[0].y) == snaky.body[1]:
+            snaky.body.insert(0, v2(snaky.body[0].x - 1, snaky.body[0].y))
+        if v2(snaky.body[0].x - 1, snaky.body[0].y) == snaky.body[1]:
+            snaky.body.insert(0, v2(snaky.body[0].x + 1, snaky.body[0].y))
+        if v2(snaky.body[0].x, snaky.body[0].y + 1) == snaky.body[1]:
+            snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y - 1))
+        if v2(snaky.body[0].x, snaky.body[0].y - 1) == snaky.body[1]:
+            snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y + 1))
+    # if len(snaky.body) != len(set(snaky.body)):
+    #     print("You Lost!")
     clock.tick(60)
