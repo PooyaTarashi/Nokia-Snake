@@ -45,6 +45,7 @@ screen = pg.display.set_mode((x_grids_count * grid_size, y_grids_count * grid_si
 clock = pg.time.Clock()
 
 apple = FOOD()
+rabbit = FOOD()
 snaky = SNAKE()
 
 SCREEN_UPDATE = pg.USEREVENT
@@ -73,6 +74,7 @@ while True:
     
     # add fill color to screen surface
     screen.fill((175, 215, 70))
+    
     apple.draw_food()
     snaky.draw_snake()
     pg.display.update()
