@@ -10,6 +10,7 @@ clock = pygame.time.Clock()
 ##########################
 test_surface = pygame.Surface((30, 200))
 test_surface.fill((0, 0, 255))
+#test_rect = pygame.Rect(0, 0, 100, 200)
 x_pos = 200;
 
 while True:
@@ -20,6 +21,7 @@ while True:
             sys.exit()
     screen.fill((175, 215, 70))
     screen.blit(test_surface, (x_pos, 250))
+    #pygame.draw.ellipse(screen, (255, 255, 255), test_rect)
     x_pos += 1
     pygame.display.update()
     ########################## comment this sandwich later
