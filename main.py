@@ -1,18 +1,18 @@
 import pygame as pg
 import sys
-import random
+from random import randint as rnt
 from pygame.math import Vector2 as v2
-# from pygame.draw import rect as rct
+from pygame.draw import rect as rct
 
 class FOOD:
     def __init__(self):
-        self.x = 0
-        self.y = 10
+        self.x = rnt(0, x_grids_count - 1)
+        self.y = rnt(0, y_grids_count - 1)
         self.pos = v2(self.x, self.y)
     
     def draw_food(self):
         food_rect = pg.Rect(int(self.pos.x * grid_size), int(self.pos.y * grid_size), grid_size, grid_size)
-        pg.draw.rect(screen, (126, 166, 114), food_rect)
+        rct(screen, (126, 166, 114), food_rect)
 
 # module initiatioin
 pg.init()
