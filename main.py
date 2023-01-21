@@ -6,7 +6,7 @@ from pygame.draw import rect as drwrct
 
 class SNAKE:
     def __init__(self):
-        self.body = [v2(5, 10), v2(6, 10), v2(7, 10)]
+        self.body = [v2(5, 10), v2(6, 10), v2(7, 10), v2(8, 10)]
         self.direction = v2(1, 0)    
 
     def draw_snake(self):
@@ -17,15 +17,8 @@ class SNAKE:
             drwrct(screen, (0, 0, 255), cell_rect)
 
     def move_snake(self, c):
-        missing_block = self.body[1]
-        body_copy = self.body[:-1]
-        if c == 0:
-            body_copy.insert(0, body_copy[0] + self.direction + v2(1, 0))
-        
-        else:
-            body_copy.insert(0, body_copy[len(body_copy) - 1] + self.direction)
-
-        
+        body_copy = self.body[1:]
+        body_copy.append(body_copy[len(body_copy) - 1] + self.direction)
         self.body = body_copy[:]
 
 
