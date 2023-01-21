@@ -48,8 +48,7 @@ apple = FOOD()
 snaky = SNAKE()
 
 SCREEN_UPDATE = pg.USEREVENT
-pg.time.set_timer(SCREEN_UPDATE, 90)
-# عدد رو به تابعی از طول مار تبدیل خواهم کرد
+pg.time.set_timer(SCREEN_UPDATE, 90 - int(0.01 * int(len(snaky.body) * len(snaky.body))))
 
 while True:
     # checks for happening event
@@ -87,6 +86,14 @@ while True:
             snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y - 1))
         if v2(snaky.body[0].x, snaky.body[0].y - 1) == snaky.body[1]:
             snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y + 1))
-    # if len(snaky.body) != len(set(snaky.body)):
-    #     print("You Lost!")
+    body_checker = snaky.body[:]
+    head_place = body_checker[len(body_checker) - 1]
+    body_checker.remove(head_place)
+    if head_place in body_checker:
+        print("You were tied!")
+        sys.exit()
+
+    if ((head_place.x * grid_size) > (x_grids_count * grid_size)) or (head_place.y < 0) or ((head_place.y * grid_size) > (y_grids_count * grid_size)) or  (head_place.x < 0):
+        print("You hit the wall")
+        sys.exit()
     clock.tick(60)
