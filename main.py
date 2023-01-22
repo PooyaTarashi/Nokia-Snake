@@ -6,7 +6,7 @@ from pygame.draw import rect as drwrct
 
 class SNAKE:
     def __init__(self):
-        self.body = [v2(5, 10), v2(6, 10), v2(7, 10), v2(8, 10)]
+        self.body = [v2(5, 10), v2(6, 10)]
         self.direction = v2(1, 0)    
 
     def draw_snake(self):
@@ -64,6 +64,9 @@ class BARRIER:
         barrier_rect = pg.Rect(int(self.pos.x * grid_size), int(self.pos.y * grid_size), grid_size * 3, grid_size)
         drwrct(screen, (101, 67, 33), barrier_rect)
 
+# def show_score():
+
+
 # module initiatioin
 pg.init()
 # griding screen
@@ -72,6 +75,9 @@ x_grids_count, y_grids_count = 40, 30
 # making screen - keep it using while loop
 screen = pg.display.set_mode((x_grids_count * grid_size, y_grids_count * grid_size)) 
 clock = pg.time.Clock()
+
+# add game font
+font = pg.font.Font('freesansbold.ttf', 16)
 
 # difficulty will be customizable by user
 difficulty = 9
@@ -124,14 +130,22 @@ while True:
             if event.key == pg.K_LEFT or event.key == pg.K_a:
                 snaky.direction = v2(-1, 0)
     
-    # a_random_int = rnt(0, 100)
-    # print(a_random_int)
+
     # add fill color to screen surface
     screen.fill((175, 215, 70))
     
     
     food.draw_food()
     snaky.draw_snake()
+
+    # score table
+    score_text = str(len(snaky.body) - 2)
+    score_surface = font.render("Score: " + score_text, True, (56, 74, 12))
+    score_xpos = int((grid_size - 1) * x_grids_count)
+    score_ypos = int((grid_size - 1) * y_grids_count)
+    score_rect = score_surface.get_rect(center = (score_xpos, score_ypos))
+    screen.blit(score_surface, score_rect)
+    # print(score_text)
 
     for i in range(difficulty):
         wall.draw_barrier(walls_count_x[i], walls_count_y[i])
@@ -162,6 +176,7 @@ while True:
             arzesh_qazaei = 1
 
         food.reinitialize_random_position(a_random_int, walls_pos)
+
     
     body_checker = snaky.body[:]
     head_place = body_checker[len(body_checker) - 1]
@@ -182,4 +197,9 @@ while True:
     if ((head_place.x * grid_size) >= (x_grids_count * grid_size)) or (head_place.y < 0) or ((head_place.y * grid_size) >= (y_grids_count * grid_size)) or  (head_place.x < 0):
         print("You hit the wall!")
         sys.exit()
+    
+    
+
+
+
     clock.tick(60)
