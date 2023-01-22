@@ -95,12 +95,7 @@ while True:
     snaky.draw_snake()
     pg.display.update()
     if apple.pos == snaky.body[0]:
-        apple.reinitialize_random_position(a_random_int)
-        if a_random_int % 7 == 0:
-            arzesh_qazaei = 3
-        else:
-            arzesh_qazaei = 1
-
+        
         if v2(snaky.body[0].x + 1, snaky.body[0].y) == snaky.body[1]:
             for i in range(arzesh_qazaei):
                 snaky.body.insert(0, v2(snaky.body[0].x - 1, snaky.body[0].y))
@@ -113,9 +108,18 @@ while True:
         if v2(snaky.body[0].x, snaky.body[0].y - 1) == snaky.body[1]:
             for i in range(arzesh_qazaei):
                 snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y + 1))
+        
         a_random_int = rnt(0, 100)
         print(a_random_int)
         
+        if a_random_int % 7 == 0:
+            arzesh_qazaei = 3
+        else:
+            arzesh_qazaei = 1
+
+        apple.reinitialize_random_position(a_random_int)
+        
+
     
     body_checker = snaky.body[:]
     head_place = body_checker[len(body_checker) - 1]
