@@ -23,15 +23,15 @@ class SNAKE:
 
 
 class FOOD:
-    def __init__(self, rndm):
-        self.reinitialize_random_position(rndm)
+    def __init__(self, rndm, wall_ls):
+        self.reinitialize_random_position(rndm, wall_ls)
     
     def draw_food(self):
         color_tuple = (self.r_factor, self.g_factor, self.b_factor)
         food_rect = pg.Rect(int(self.pos.x * grid_size), int(self.pos.y * grid_size), grid_size, grid_size)
         drwrct(screen, color_tuple, food_rect)
 
-    def reinitialize_random_position(self, rndm):
+    def reinitialize_random_position(self, rndm, wall_ls):
         
         if rndm % 7 == 0:
             self.r_factor = 212
@@ -42,10 +42,28 @@ class FOOD:
             self.g_factor = 166
             self.b_factor = 114
 
+        while True:
+            self.x = rnt(0, x_grids_count - 1)
+            self.y = rnt(0, y_grids_count - 1)
+            if [self.x, self.y] not in wall_ls:
+                break
+        
+        self.pos = v2(self.x, self.y)
+        
+
+class BARRIER:
+    def __init__(self):
         self.x = rnt(0, x_grids_count - 1)
         self.y = rnt(0, y_grids_count - 1)
         self.pos = v2(self.x, self.y)
-        
+    
+    def draw_barrier(self, x, y):
+        self.x = x
+        self.y = y
+        self.pos = v2(self.x, self.y)
+        barrier_rect = pg.Rect(int(self.pos.x * grid_size), int(self.pos.y * grid_size), grid_size * 3, grid_size)
+        drwrct(screen, (101, 67, 33), barrier_rect)
+
 # module initiatioin
 pg.init()
 # griding screen
@@ -55,19 +73,39 @@ x_grids_count, y_grids_count = 40, 30
 screen = pg.display.set_mode((x_grids_count * grid_size, y_grids_count * grid_size)) 
 clock = pg.time.Clock()
 
-a_random_int = rnt(0, 100)
-apple = FOOD(a_random_int)
-snaky = SNAKE()
+# difficulty will be customizable by user
+difficulty = 9
+walls_count_x = []
+walls_count_y = []
+walls_pos = []
 
+# making objects - random number for golden apples
+a_random_int = rnt(0, 100)
+food = FOOD(a_random_int, walls_pos)
+snaky = SNAKE()
+wall = BARRIER()
+
+# updates screen
 SCREEN_UPDATE = pg.USEREVENT
 pg.time.set_timer(SCREEN_UPDATE, 90 - int(0.01 * int(len(snaky.body) * len(snaky.body))))
 
+# setting primary nutritive value
 arzesh_qazaei = 1
+
+# sets random position for walls
+for i in range(difficulty):
+    walls_count_x.append(rnt(0, x_grids_count - 3))
+    walls_count_y.append(rnt(0, y_grids_count - 1))
+    for j in range(3):
+        walls_pos.append([walls_count_x[i] + j, walls_count_y[i]])
+
 
 while True:
     # checks for happening event
     # if quit, sys exit stops every running code
 
+
+    # motion controls
     for event in pg.event.get():
         if event.type == pg.QUIT:
             sys.exit()
@@ -91,10 +129,16 @@ while True:
     # add fill color to screen surface
     screen.fill((175, 215, 70))
     
-    apple.draw_food()
+    
+    food.draw_food()
     snaky.draw_snake()
+
+    for i in range(difficulty):
+        wall.draw_barrier(walls_count_x[i], walls_count_y[i])
     pg.display.update()
-    if apple.pos == snaky.body[0]:
+    
+    # eating apples
+    if food.pos == snaky.body[0]:
         
         if v2(snaky.body[0].x + 1, snaky.body[0].y) == snaky.body[1]:
             for i in range(arzesh_qazaei):
@@ -117,18 +161,25 @@ while True:
         else:
             arzesh_qazaei = 1
 
-        apple.reinitialize_random_position(a_random_int)
-        
-
+        food.reinitialize_random_position(a_random_int, walls_pos)
     
     body_checker = snaky.body[:]
     head_place = body_checker[len(body_checker) - 1]
     body_checker.remove(head_place)
+    
+
+    # Game Over: hitting barrier
+    if snaky.body[0] in walls_pos:
+        print("You hit a barrier!")
+        sys.exit()
+
+    # Game Over: being tied
     if head_place in body_checker:
         print("You were tied!")
         sys.exit()
 
+    # Game Over: hitting the wall
     if ((head_place.x * grid_size) >= (x_grids_count * grid_size)) or (head_place.y < 0) or ((head_place.y * grid_size) >= (y_grids_count * grid_size)) or  (head_place.x < 0):
-        print("You hit the wall")
+        print("You hit the wall!")
         sys.exit()
     clock.tick(60)
