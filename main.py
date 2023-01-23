@@ -5,6 +5,7 @@ from pygame.math import Vector2 as v2
 from pygame.draw import rect as drwrct
 
 class SNAKE:
+
     def __init__(self):
         self.body = [v2(5, 10), v2(6, 10)]
         self.direction = v2(1, 0)    
@@ -21,6 +22,14 @@ class SNAKE:
         body_copy.append(body_copy[len(body_copy) - 1] + self.direction)
         self.body = body_copy[:]
 
+    def position_reset(self):
+        self.body = [v2(5, 10), v2(6, 10)]
+        self.direction = v2(1, 0)
+        for cell in self.body:
+            snake_x_pos = int(cell.x * grid_size)
+            snake_y_pos = int(cell.y * grid_size)
+            cell_rect = pg.Rect(snake_x_pos, snake_y_pos, grid_size, grid_size)
+            drwrct(screen, (0, 0, 255), cell_rect)
 
 class FOOD:
     def __init__(self, rndm, wall_ls):
@@ -79,6 +88,8 @@ clock = pg.time.Clock()
 # add game font
 font = pg.font.Font('freesansbold.ttf', 16)
 menu_font = pg.font.Font('pricedow.ttf', 48)
+game_over_font = pg.font.Font('freesansbold.ttf', 24)
+
 
 # difficulty will be customizable by user
 difficulty = 9
@@ -108,6 +119,27 @@ for i in range(difficulty):
 
 
 def main_menu():
+
+    walls_count_x = []
+    walls_count_y = []
+    walls_pos = []
+
+    # making objects - random number for golden apples
+    a_random_int = rnt(0, 100)
+    food = FOOD(a_random_int, walls_pos)
+    snaky = SNAKE()
+    wall = BARRIER()
+
+    snaky.position_reset()
+
+    # sets random position for walls
+    for i in range(difficulty):
+        walls_count_x.append(rnt(0, x_grids_count - 3))
+        walls_count_y.append(rnt(0, y_grids_count - 1))
+        for j in range(3):
+            walls_pos.append([walls_count_x[i] + j, walls_count_y[i]])
+
+
     screen.fill((30, 30, 30))
     while True:
         for event in pg.event.get():
@@ -146,7 +178,6 @@ def game_screen(arzesh_qazaei):
     while True:
         # checks for happening event
         # if quit, sys exit stops every running code
-
 
         # motion controls
         for event in pg.event.get():
@@ -221,23 +252,67 @@ def game_screen(arzesh_qazaei):
         head_place = body_checker[len(body_checker) - 1]
         body_checker.remove(head_place)
     
+        its_over = False
 
+        game_over_cause = ""
         # Game Over: hitting barrier
         if snaky.body[0] in walls_pos or snaky.body[len(snaky.body) - 1] in walls_pos:
-            print("You hit a barrier!")
-            sys.exit()
+            game_over_cause += "You hit a barrier!"
+            its_over = True
+            break
+            # sys.exit()
 
         # Game Over: being tied
         if head_place in body_checker:
-            print("You were tied!")
-            sys.exit()
+            game_over_cause += "You were tied!"
+            its_over = True
+            break
+            # sys.exit()
 
         # Game Over: hitting the wall
         if ((head_place.x * grid_size) >= (x_grids_count * grid_size)) or (head_place.y < 0) or ((head_place.y * grid_size) >= (y_grids_count * grid_size)) or  (head_place.x < 0):
-            print("You hit the wall!")
-            sys.exit()
+            game_over_cause += "You hit the wall!"
+            its_over = True
+            break
+            # sys.exit()
     
-    
+        
+        clock.tick(60)
+
+    if its_over:
+        game_over_menu(game_over_cause)
+
+def game_over_menu(strr):
+    screen.fill((30, 30, 30))
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                sys.exit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_RETURN or event.key == pg.K_KP_ENTER or event.key == pg.K_SPACE:
+                    main_menu()
+                if event.key == pg.K_x:
+                    sys.exit()
+        
+        
+        game_over_text = "GAME OVER!"
+        game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
+        game_over_rect = game_over_surface.get_rect(center = (int((grid_size / 2) * x_grids_count), int((grid_size / 2 - 7) * y_grids_count)))
+        screen.blit(game_over_surface, game_over_rect)
+        pg.display.update()
+
+        game_over_text = strr
+        game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
+        game_over_rect = game_over_surface.get_rect(center = (int((grid_size / 2) * x_grids_count), int((grid_size / 2 - 5) * y_grids_count)))
+        screen.blit(game_over_surface, game_over_rect)
+        pg.display.update()
+
+        game_over_text = "press X to exit or ENTER to get back to the main menu"
+        game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
+        game_over_rect = game_over_surface.get_rect(center = (int((grid_size / 2) * x_grids_count), int((grid_size / 2 - 3) * y_grids_count)))
+        screen.blit(game_over_surface, game_over_rect)
+
+        pg.display.update()
         clock.tick(60)
 
 
