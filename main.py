@@ -108,7 +108,9 @@ class BARRIER:
         drwrct(screen, (101, 67, 33), barrier_rect)
 
 
-
+def getHighestScore():
+    with open("highest_score.txt","r") as f:
+        return f.read()
 
 def game_screen(arzesh_qazaei):
 
@@ -233,29 +235,39 @@ def game_screen(arzesh_qazaei):
         body_checker.remove(head_place)
     
 
+        # highest_score = 0
+        try:
+            highest_score = int(getHighestScore())
+        except:
+            highest_score = 0
+        if highest_score < int(score_text):
+            highest_score = int(score_text)
+        with open("highest_score.txt","w") as f:
+            f.write(str(highest_score))
+
         # Game Over: hitting barrier
         if snaky.body[0] in walls_pos or snaky.body[len(snaky.body) - 1] in walls_pos:
             print("You hit a barrier!")
-            game_over_menu("You hit a barrier!")
+            game_over_menu("You hit a barrier!", int(score_text), int(highest_score))
             # sys.exit()
 
         # Game Over: being tied
         if head_place in body_checker:
             print("You were tied!")
-            game_over_menu("You were tied!")
+            game_over_menu("You were tied!", int(score_text), int(highest_score))
             # sys.exit()
 
         # Game Over: hitting the wall
         if ((head_place.x * grid_size) >= (x_grids_count * grid_size)) or (head_place.y < 0) or ((head_place.y * grid_size) >= (y_grids_count * grid_size)) or  (head_place.x < 0):
-            print("You hit the wall!")
-            game_over_menu("You hit the wall!")
+            print("You hit the wall!", int(score_text), int(highest_score))
+            game_over_menu("You hit the wall!", int(score_text), int(highest_score))
             # sys.exit()
     
     
         clock.tick(60)
 
 
-def game_over_menu(strr):
+def game_over_menu(strr, your_score, highest_score):
     screen = pg.display.set_mode((800, 600)) 
     game_over_font = pg.font.Font('freesansbold.ttf', 24)
 
@@ -272,11 +284,18 @@ def game_over_menu(strr):
                     sys.exit()
         
         
-        game_over_text = "GAME OVER!"
-        game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
-        game_over_rect = game_over_surface.get_rect(center = (400, 90))
-        screen.blit(game_over_surface, game_over_rect)
-        pg.display.update()
+        if int(your_score) >= int(highest_score):
+            game_over_text = "You made a new record!"
+            game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
+            game_over_rect = game_over_surface.get_rect(center = (400, 90))
+            screen.blit(game_over_surface, game_over_rect)
+            pg.display.update()
+        else:    
+            game_over_text = "GAME OVER!"
+            game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
+            game_over_rect = game_over_surface.get_rect(center = (400, 90))
+            screen.blit(game_over_surface, game_over_rect)
+            pg.display.update()
 
         game_over_text = strr
         game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
@@ -287,6 +306,17 @@ def game_over_menu(strr):
         game_over_text = "press X to exit or ENTER to get back to the main menu"
         game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
         game_over_rect = game_over_surface.get_rect(center = (400, 210))
+        screen.blit(game_over_surface, game_over_rect)
+
+
+        game_over_text = "Your score is: " + str(your_score)
+        game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
+        game_over_rect = game_over_surface.get_rect(center = (400, 270))
+        screen.blit(game_over_surface, game_over_rect)
+
+        game_over_text = "The highest score: " + str(highest_score)
+        game_over_surface = game_over_font.render(game_over_text, True, (255, 255, 255))
+        game_over_rect = game_over_surface.get_rect(center = (400, 330))
         screen.blit(game_over_surface, game_over_rect)
 
         pg.display.update()
