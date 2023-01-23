@@ -78,6 +78,7 @@ clock = pg.time.Clock()
 
 # add game font
 font = pg.font.Font('freesansbold.ttf', 16)
+menu_font = pg.font.Font('pricedow.ttf', 48)
 
 # difficulty will be customizable by user
 difficulty = 9
@@ -106,100 +107,139 @@ for i in range(difficulty):
         walls_pos.append([walls_count_x[i] + j, walls_count_y[i]])
 
 
-while True:
-    # checks for happening event
-    # if quit, sys exit stops every running code
+def main_menu():
+    screen.fill((30, 30, 30))
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                sys.exit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_KP_ENTER or event.key == pg.K_SPACE or event.key == pg.K_RETURN:
+                    for  i in range(3):
+                        menu_surface = menu_font.render(str(i + 1), True, (255, 255, 255))
+                        menu_xpos = int((grid_size / 2) * x_grids_count)
+                        menu_ypos = int((grid_size / 2 + i) * y_grids_count)
+                        menu_rect = menu_surface.get_rect(center = (menu_xpos, menu_ypos))
+                        screen.blit(menu_surface, menu_rect)
+                        pg.display.update()
+                        pg.time.delay(800)
+                    
+                    game_screen(arzesh_qazaei)
+        
+
+        
+        
+        
+        menu_text = "Hit ENTER or SPACE to start the game"
+        menu_surface = menu_font.render(menu_text, True, (255, 255, 255))
+        menu_xpos = int((grid_size / 2) * x_grids_count)
+        menu_ypos = int((grid_size / 2 - 5) * y_grids_count)
+        menu_rect = menu_surface.get_rect(center = (menu_xpos, menu_ypos))
+        screen.blit(menu_surface, menu_rect)
 
 
-    # motion controls
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
+        pg.display.update()
+        clock.tick(60)
+
+
+def game_screen(arzesh_qazaei):
+    while True:
+        # checks for happening event
+        # if quit, sys exit stops every running code
+
+
+        # motion controls
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                sys.exit()
+            if event.type == SCREEN_UPDATE:
+                snaky.move_snake()
+            if event.type == pg.KEYDOWN and snaky.direction != (0, 1):
+                if event.key == pg.K_UP or event.key == pg.K_w:
+                    snaky.direction = v2(0, -1)
+            if event.type == pg.KEYDOWN and snaky.direction != (0, -1):
+                if event.key == pg.K_DOWN or event.key == pg.K_s:
+                    snaky.direction = v2(0, 1)
+            if event.type == pg.KEYDOWN and snaky.direction != (-1, 0):
+                if event.key == pg.K_RIGHT or event.key == pg.K_d:
+                    snaky.direction = v2(1, 0)
+            if event.type == pg.KEYDOWN and snaky.direction != (1, 0):
+                if event.key == pg.K_LEFT or event.key == pg.K_a:
+                    snaky.direction = v2(-1, 0)
+    
+
+        # add fill color to screen surface
+        screen.fill((175, 215, 70))
+    
+    
+        food.draw_food()
+        snaky.draw_snake()
+
+        # score table
+        score_text = str(len(snaky.body) - 2)
+        score_surface = font.render("Score: " + score_text, True, (56, 74, 12))
+        score_xpos = int((grid_size - 1) * x_grids_count)
+        score_ypos = int((grid_size - 1) * y_grids_count)
+        score_rect = score_surface.get_rect(center = (score_xpos, score_ypos))
+        screen.blit(score_surface, score_rect)
+        # print(score_text)
+
+
+        for i in range(difficulty):
+            wall.draw_barrier(walls_count_x[i], walls_count_y[i])
+        
+        pg.display.update()
+    
+        # eating apples
+        if food.pos == snaky.body[0] or food.pos == snaky.body[len(snaky.body) - 1]:
+        
+            if v2(snaky.body[0].x + 1, snaky.body[0].y) == snaky.body[1]:
+                for i in range(arzesh_qazaei):
+                    snaky.body.insert(0, v2(snaky.body[0].x - 1, snaky.body[0].y))
+            if v2(snaky.body[0].x - 1, snaky.body[0].y) == snaky.body[1]:
+                for i in range(arzesh_qazaei):
+                    snaky.body.insert(0, v2(snaky.body[0].x + 1, snaky.body[0].y))
+            if v2(snaky.body[0].x, snaky.body[0].y + 1) == snaky.body[1]:
+                for i in range(arzesh_qazaei):
+                    snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y - 1))
+            if v2(snaky.body[0].x, snaky.body[0].y - 1) == snaky.body[1]:
+                for i in range(arzesh_qazaei):
+                    snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y + 1))
+        
+            a_random_int = rnt(0, 100)
+            # print(a_random_int)
+        
+            if a_random_int % 7 == 0:
+                arzesh_qazaei = 3
+            else:
+                arzesh_qazaei = 1
+
+            food.reinitialize_random_position(a_random_int, walls_pos)
+
+    
+        body_checker = snaky.body[:]
+        head_place = body_checker[len(body_checker) - 1]
+        body_checker.remove(head_place)
+    
+
+        # Game Over: hitting barrier
+        if snaky.body[0] in walls_pos or snaky.body[len(snaky.body) - 1] in walls_pos:
+            print("You hit a barrier!")
             sys.exit()
-        if event.type == SCREEN_UPDATE:
-            snaky.move_snake()
-        if event.type == pg.KEYDOWN and snaky.direction != (0, 1):
-            if event.key == pg.K_UP or event.key == pg.K_w:
-                snaky.direction = v2(0, -1)
-        if event.type == pg.KEYDOWN and snaky.direction != (0, -1):
-            if event.key == pg.K_DOWN or event.key == pg.K_s:
-                snaky.direction = v2(0, 1)
-        if event.type == pg.KEYDOWN and snaky.direction != (-1, 0):
-            if event.key == pg.K_RIGHT or event.key == pg.K_d:
-                snaky.direction = v2(1, 0)
-        if event.type == pg.KEYDOWN and snaky.direction != (1, 0):
-            if event.key == pg.K_LEFT or event.key == pg.K_a:
-                snaky.direction = v2(-1, 0)
-    
 
-    # add fill color to screen surface
-    screen.fill((175, 215, 70))
+        # Game Over: being tied
+        if head_place in body_checker:
+            print("You were tied!")
+            sys.exit()
+
+        # Game Over: hitting the wall
+        if ((head_place.x * grid_size) >= (x_grids_count * grid_size)) or (head_place.y < 0) or ((head_place.y * grid_size) >= (y_grids_count * grid_size)) or  (head_place.x < 0):
+            print("You hit the wall!")
+            sys.exit()
     
     
-    food.draw_food()
-    snaky.draw_snake()
-
-    # score table
-    score_text = str(len(snaky.body) - 2)
-    score_surface = font.render("Score: " + score_text, True, (56, 74, 12))
-    score_xpos = int((grid_size - 1) * x_grids_count)
-    score_ypos = int((grid_size - 1) * y_grids_count)
-    score_rect = score_surface.get_rect(center = (score_xpos, score_ypos))
-    screen.blit(score_surface, score_rect)
-    # print(score_text)
-
-    for i in range(difficulty):
-        wall.draw_barrier(walls_count_x[i], walls_count_y[i])
-    pg.display.update()
-    
-    # eating apples
-    if food.pos == snaky.body[0]:
-        
-        if v2(snaky.body[0].x + 1, snaky.body[0].y) == snaky.body[1]:
-            for i in range(arzesh_qazaei):
-                snaky.body.insert(0, v2(snaky.body[0].x - 1, snaky.body[0].y))
-        if v2(snaky.body[0].x - 1, snaky.body[0].y) == snaky.body[1]:
-            for i in range(arzesh_qazaei):
-                snaky.body.insert(0, v2(snaky.body[0].x + 1, snaky.body[0].y))
-        if v2(snaky.body[0].x, snaky.body[0].y + 1) == snaky.body[1]:
-            for i in range(arzesh_qazaei):
-                snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y - 1))
-        if v2(snaky.body[0].x, snaky.body[0].y - 1) == snaky.body[1]:
-            for i in range(arzesh_qazaei):
-                snaky.body.insert(0, v2(snaky.body[0].x, snaky.body[0].y + 1))
-        
-        a_random_int = rnt(0, 100)
-        print(a_random_int)
-        
-        if a_random_int % 7 == 0:
-            arzesh_qazaei = 3
-        else:
-            arzesh_qazaei = 1
-
-        food.reinitialize_random_position(a_random_int, walls_pos)
-
-    
-    body_checker = snaky.body[:]
-    head_place = body_checker[len(body_checker) - 1]
-    body_checker.remove(head_place)
-    
-
-    # Game Over: hitting barrier
-    if snaky.body[0] in walls_pos:
-        print("You hit a barrier!")
-        sys.exit()
-
-    # Game Over: being tied
-    if head_place in body_checker:
-        print("You were tied!")
-        sys.exit()
-
-    # Game Over: hitting the wall
-    if ((head_place.x * grid_size) >= (x_grids_count * grid_size)) or (head_place.y < 0) or ((head_place.y * grid_size) >= (y_grids_count * grid_size)) or  (head_place.x < 0):
-        print("You hit the wall!")
-        sys.exit()
-    
-    
+        clock.tick(60)
 
 
-
-    clock.tick(60)
+main_menu()
+# game_screen(arzesh_qazaei)
