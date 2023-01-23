@@ -43,8 +43,6 @@ def main_menu():
 
 
         pg.display.update()
-        # clock.tick(60)
-
 
 
 class SNAKE:
@@ -182,7 +180,7 @@ def game_screen(arzesh_qazaei):
     
 
         # add fill color to screen surface
-        screen.fill((175, 215, 70))
+        screen.fill((100, 255, 100))
     
     
         food.draw_food(screen, grid_size)
@@ -320,7 +318,6 @@ def game_over_menu(strr, your_score, highest_score):
         screen.blit(game_over_surface, game_over_rect)
 
         pg.display.update()
-        # clock.tick(60)
+
 
 main_menu()
-# game_screen(arzesh_qazaei)
