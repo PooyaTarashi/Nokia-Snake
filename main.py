@@ -64,25 +64,31 @@ class SNAKE:
 
 
 class FOOD:
-    def __init__(self, rndm, wall_ls, x_grids_count, y_grids_count):
-        self.reinitialize_random_position(rndm, wall_ls, x_grids_count, y_grids_count)
+    def __init__(self, rndm, wall_ls, x_grids_count, y_grids_count, apple):
+        self.reinitialize_random_position(rndm, wall_ls, x_grids_count, y_grids_count, apple)
     
-    def draw_food(self, screen, grid_size, apple):
-        color_tuple = (self.r_factor, self.g_factor, self.b_factor)
+    def draw_food(self, screen, grid_size, apple, rabbit, rndm):
+        # color_tuple = (self.r_factor, self.g_factor, self.b_factor)
         food_rect = pg.Rect(int(self.pos.x * grid_size), int(self.pos.y * grid_size), grid_size, grid_size)
-        screen.blit(apple, food_rect)
+        if rndm % 7 == 0:
+            screen.blit(rabbit, food_rect)
+        else:
+            screen.blit(apple, food_rect)
+
         # drwrct(screen, color_tuple, food_rect)
 
-    def reinitialize_random_position(self, rndm, wall_ls, x_grids_count, y_grids_count):
+    def reinitialize_random_position(self, rndm, wall_ls, x_grids_count, y_grids_count, apple):
         
         if rndm % 7 == 0:
-            self.r_factor = 212
-            self.g_factor = 175
-            self.b_factor = 55
+            apple = pg.image.load('Graphics/images20.png').convert_alpha()
+            # self.r_factor = 212
+            # self.g_factor = 175
+            # self.b_factor = 55
         else:
-            self.r_factor = 126
-            self.g_factor = 166
-            self.b_factor = 114
+            apple = pg.image.load('Graphics/sib.png').convert_alpha()
+            # self.r_factor = 126
+            # self.g_factor = 166
+            # self.b_factor = 114
 
         while True:
             self.x = rnt(0, x_grids_count - 1)
@@ -132,9 +138,13 @@ def game_screen(arzesh_qazaei):
     walls_count_y = []
     walls_pos = []
 
+    # add graphics
+    apple = pg.image.load('Graphics/sib.png').convert_alpha()
+    rabbit = pg.image.load('Graphics/images20.png').convert_alpha()
+
     # making objects - random number for golden apples
     a_random_int = rnt(0, 100)
-    food = FOOD(a_random_int, walls_pos, x_grids_count, y_grids_count)
+    food = FOOD(a_random_int, walls_pos, x_grids_count, y_grids_count, apple)
     snaky = SNAKE()
     wall = BARRIER(x_grids_count, y_grids_count)
 
@@ -143,9 +153,6 @@ def game_screen(arzesh_qazaei):
     pg.time.set_timer(SCREEN_UPDATE, 90 - int(0.01 * int(len(snaky.body) * len(snaky.body))))
 
     arzesh_qazaei = 1
-
-    # add graphics
-    apple = pg.image.load('Graphics/sib.png').convert_alpha()
 
     # sets random position for walls
     for i in range(difficulty):
@@ -188,7 +195,7 @@ def game_screen(arzesh_qazaei):
         screen.fill((100, 255, 100))
     
     
-        food.draw_food(screen, grid_size, apple)
+        food.draw_food(screen, grid_size, apple, rabbit, a_random_int)
         snaky.draw_snake(grid_size, screen)
 
         # score table
@@ -230,7 +237,7 @@ def game_screen(arzesh_qazaei):
             else:
                 arzesh_qazaei = 1
 
-            food.reinitialize_random_position(a_random_int, walls_pos, x_grids_count, y_grids_count)
+            food.reinitialize_random_position(a_random_int, walls_pos, x_grids_count, y_grids_count, apple)
 
     
         # checking body if there is head place in body or not
