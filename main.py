@@ -67,10 +67,11 @@ class FOOD:
     def __init__(self, rndm, wall_ls, x_grids_count, y_grids_count):
         self.reinitialize_random_position(rndm, wall_ls, x_grids_count, y_grids_count)
     
-    def draw_food(self, screen, grid_size):
+    def draw_food(self, screen, grid_size, apple):
         color_tuple = (self.r_factor, self.g_factor, self.b_factor)
         food_rect = pg.Rect(int(self.pos.x * grid_size), int(self.pos.y * grid_size), grid_size, grid_size)
-        drwrct(screen, color_tuple, food_rect)
+        screen.blit(apple, food_rect)
+        # drwrct(screen, color_tuple, food_rect)
 
     def reinitialize_random_position(self, rndm, wall_ls, x_grids_count, y_grids_count):
         
@@ -110,6 +111,7 @@ def getHighestScore():
     with open("highest_score.txt","r") as f:
         return f.read()
 
+
 def game_screen(arzesh_qazaei):
 
     # module initiatioin
@@ -141,6 +143,9 @@ def game_screen(arzesh_qazaei):
     pg.time.set_timer(SCREEN_UPDATE, 90 - int(0.01 * int(len(snaky.body) * len(snaky.body))))
 
     arzesh_qazaei = 1
+
+    # add graphics
+    apple = pg.image.load('Graphics/sib.png').convert_alpha()
 
     # sets random position for walls
     for i in range(difficulty):
@@ -183,7 +188,7 @@ def game_screen(arzesh_qazaei):
         screen.fill((100, 255, 100))
     
     
-        food.draw_food(screen, grid_size)
+        food.draw_food(screen, grid_size, apple)
         snaky.draw_snake(grid_size, screen)
 
         # score table
@@ -228,6 +233,8 @@ def game_screen(arzesh_qazaei):
             food.reinitialize_random_position(a_random_int, walls_pos, x_grids_count, y_grids_count)
 
     
+        # checking body if there is head place in body or not
+        # if head place in body checker, player loses
         body_checker = snaky.body[:]
         head_place = body_checker[len(body_checker) - 1]
         body_checker.remove(head_place)
