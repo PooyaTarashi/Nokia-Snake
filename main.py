@@ -55,7 +55,14 @@ class SNAKE:
             snake_x_pos = int(cell.x * grid_size)
             snake_y_pos = int(cell.y * grid_size)
             cell_rect = pg.Rect(snake_x_pos, snake_y_pos, grid_size, grid_size)
-            drwrct(screen, (0, 0, 255), cell_rect)
+            snake_cell = pg.image.load('Graphics/downssload.png').convert_alpha()
+            snake_cell_head = pg.image.load('Graphics/s_head.png').convert_alpha()
+
+            if cell == self.body[len(self.body) - 1]:
+                screen.blit(snake_cell_head, cell_rect)
+            else:
+                screen.blit(snake_cell, cell_rect)
+            # drwrct(screen, (0, 0, 255), cell_rect)
 
     def move_snake(self):
         body_copy = self.body[1:]
@@ -109,8 +116,10 @@ class BARRIER:
         self.x = x
         self.y = y
         self.pos = v2(self.x, self.y)
+        wwall = pg.image.load('Graphics/download.png').convert_alpha()
         barrier_rect = pg.Rect(int(self.pos.x * grid_size), int(self.pos.y * grid_size), grid_size * 3, grid_size)
-        drwrct(screen, (101, 67, 33), barrier_rect)
+        screen.blit(wwall, barrier_rect)
+        # drwrct(screen, (101, 67, 33), barrier_rect)
 
 
 def getHighestScore():
